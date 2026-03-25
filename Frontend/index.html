@@ -39,7 +39,7 @@
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 16px;
-    max-width: 520px;
+    max-width: 600px;
   }
   .nav-btn {
     padding: 5px 13px;
@@ -56,6 +56,8 @@
   }
   .nav-btn:hover { border-color: #64748b; color: #fff; }
   .nav-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  /* role-gated nav btns */
+  .nav-btn.role-police, .nav-btn.role-emergency { display: none; }
 
   /* ── PHONE FRAME ── */
   .phone {
@@ -70,9 +72,9 @@
     box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
-  .hint { margin-top: 10px; font-size: 11px; color: #475569; text-align: center; }
+  .hint { margin-top: 10px; font-size: 11px; color: #475569; text-align: center; max-width:320px; }
 
-  /* ── SCREEN (hidden by default) ── */
+  /* ── SCREEN ── */
   .screen { display: none; flex-direction: column; height: 100%; }
   .screen.active { display: flex; }
 
@@ -147,6 +149,7 @@
   }
   .field:focus { border-color: var(--primary); }
   textarea.field { resize: none; line-height: 1.5; }
+  .field-err { font-size: 11px; color: var(--danger); margin-top: -8px; margin-bottom: 8px; display: none; }
 
   /* ── BADGE ── */
   .badge {
@@ -155,11 +158,12 @@
     border: 1px solid;
   }
   .badge-active  { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .badge-progress{ background: #eff6ff; color: #1a56db; border-color: #bfdbfe; }
   .badge-resolved{ background: #f0fdf4; color: #057a55; border-color: #bbf7d0; }
   .badge-high    { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 
   /* ── STAT ROW ── */
-  .stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .stat-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .stat-box { flex: 1; background: rgba(255,255,255,.12); border-radius: 10px; padding: 8px 6px; text-align: center; }
   .stat-num { font-size: 20px; font-weight: 800; }
   .stat-lbl { font-size: 10px; color: rgba(255,255,255,.65); }
@@ -177,7 +181,7 @@
   .inc-name { font-size: 13px; font-weight: 700; color: var(--text); }
   .inc-sub  { font-size: 11px; color: var(--muted); }
 
-  /* ── MAP PLACEHOLDER ── */
+  /* ── MAP ── */
   .map-placeholder {
     background: #d1fae5;
     border-radius: 10px;
@@ -264,7 +268,7 @@
   .photo-upload:hover { border-color: var(--primary); color: var(--primary); }
   .photo-upload.attached { border-color: var(--success); color: var(--success); background: #f0fdf4; }
 
-  /* ── SUCCESS SCREEN ── */
+  /* ── SUCCESS ── */
   .success-screen {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -289,7 +293,7 @@
     border: 1px solid #fecaca; border-left: 4px solid var(--danger);
   }
 
-  /* ── DETAIL SCREEN ── */
+  /* ── DETAIL ── */
   .detail-photo {
     background: #e2e8f0; height: 120px;
     display: flex; align-items: center; justify-content: center;
@@ -303,7 +307,7 @@
   .detail-field-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
   .detail-field-val   { font-size: 13px; color: var(--text); font-weight: 600; }
 
-  /* ── HERO HEADER ── */
+  /* ── HERO ── */
   .hero {
     background: var(--primary);
     padding: 24px 18px 18px; flex-shrink: 0;
@@ -317,7 +321,7 @@
   .hero-title { color: #fff; font-size: 18px; font-weight: 800; letter-spacing: -.4px; }
   .hero-sub { color: rgba(255,255,255,.65); font-size: 11px; }
 
-  /* ── MAP SCREEN FILTER ── */
+  /* ── MAP FILTER ── */
   .filter-bar {
     display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto;
     background: var(--card); border-bottom: 1px solid var(--border);
@@ -342,6 +346,19 @@
   /* ── DIVIDER ── */
   .divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
 
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 24px 16px; color: var(--muted); font-size: 12px; }
+  .empty-state .ei { font-size: 32px; margin-bottom: 8px; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #0f172a; color: #fff; border-radius: 20px;
+    padding: 8px 18px; font-size: 12px; font-weight: 600;
+    opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   /* ── ANIMATIONS ── */
   .screen.active { animation: fadeIn .2s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -349,25 +366,25 @@
 </head>
 <body>
 
-<!-- ── SCREEN NAVIGATOR ── -->
-<div class="nav-bar">
+<!-- ── NAV ── -->
+<div class="nav-bar" id="nav-bar">
   <button class="nav-btn active" onclick="show('home')">Home</button>
-  <button class="nav-btn" onclick="show('login')">Login</button>
-  <button class="nav-btn" onclick="show('register')">Register</button>
-  <button class="nav-btn" onclick="show('dashboard')">My dashboard</button>
-  <button class="nav-btn" onclick="show('report')">Report</button>
-  <button class="nav-btn" onclick="show('map')">Live map</button>
-  <button class="nav-btn" onclick="show('detail')">Detail</button>
-  <button class="nav-btn" onclick="show('police')">Police</button>
-  <button class="nav-btn" onclick="show('emergency')">Emergency</button>
+  <button class="nav-btn" id="nav-login" onclick="show('login')">Login</button>
+  <button class="nav-btn" id="nav-register" onclick="show('register')">Register</button>
+  <button class="nav-btn" id="nav-dashboard" onclick="show('dashboard')">My Dashboard</button>
+  <button class="nav-btn" id="nav-report" onclick="show('report')">Report</button>
+  <button class="nav-btn" onclick="show('map')">Live Map</button>
+  <button class="nav-btn" id="nav-detail" onclick="show('detail')">Detail</button>
+  <button class="nav-btn role-police" id="nav-police" onclick="show('police')">Police</button>
+  <button class="nav-btn role-emergency" id="nav-emergency" onclick="show('emergency')">Emergency</button>
 </div>
 
 <!-- ── PHONE FRAME ── -->
 <div class="phone">
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 1 — HOME
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen active" id="screen-home">
     <div class="hero">
       <div class="hero-top">
@@ -378,13 +395,12 @@
         </div>
       </div>
       <div class="stat-row">
-        <div class="stat-box"><div class="stat-num" style="color:#fca5a5">2</div><div class="stat-lbl">Accidents</div></div>
-        <div class="stat-box"><div class="stat-num" style="color:#fcd34d">5</div><div class="stat-lbl">Active</div></div>
-        <div class="stat-box"><div class="stat-num" style="color:#6ee7b7">2</div><div class="stat-lbl">Resolved</div></div>
+        <div class="stat-box"><div class="stat-num" id="home-stat-acc" style="color:#fca5a5">0</div><div class="stat-lbl">Accidents</div></div>
+        <div class="stat-box"><div class="stat-num" id="home-stat-act" style="color:#fcd34d">0</div><div class="stat-lbl">Active</div></div>
+        <div class="stat-box"><div class="stat-num" id="home-stat-res" style="color:#6ee7b7">0</div><div class="stat-lbl">Resolved</div></div>
       </div>
     </div>
     <div class="body">
-      <!-- Map preview -->
       <div class="map-placeholder" onclick="show('map')" style="cursor:pointer">
         <div class="map-grid"></div>
         <div class="map-road-h"></div>
@@ -395,43 +411,27 @@
         <div style="position:absolute;bottom:8px;right:10px;font-size:10px;font-weight:800;color:#064e3b;background:rgba(255,255,255,.8);padding:2px 7px;border-radius:8px;z-index:4;">Tap to open map</div>
         <div style="position:absolute;top:8px;left:10px;font-size:10px;font-weight:800;color:#dc2626;background:#fff;padding:2px 7px;border-radius:8px;z-index:4;">● LIVE</div>
       </div>
-
-      <button class="btn btn-danger" onclick="show('report')">🚨 Report an incident</button>
+      <button class="btn btn-danger" onclick="requireAuth('report')">🚨 Report an incident</button>
       <button class="btn btn-ghost" onclick="show('map')">View traffic map</button>
-
       <hr class="divider">
-      <div class="card-label">Recent incidents</div>
-
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚨</span>
-        <div style="flex:1"><div class="inc-name">Accident</div><div class="inc-sub">Kacyiru, KN 3 Ave · 14:00</div></div>
-        <span class="badge badge-active">Active</span>
+      <div class="card-label">Recent incidents — all users</div>
+      <div id="home-recent-list">
+        <div class="empty-state"><div class="ei">🗺️</div>No incidents reported yet.</div>
       </div>
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚗</span>
-        <div style="flex:1"><div class="inc-name">Traffic jam</div><div class="inc-sub">Nyabugogo, RN1 · 13:30</div></div>
-        <span class="badge badge-active">Active</span>
-      </div>
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚧</span>
-        <div style="flex:1"><div class="inc-name">Road blockage</div><div class="inc-sub">Remera, KG 11 Ave · 12:45</div></div>
-        <span class="badge badge-resolved">Resolved</span>
-      </div>
-
       <hr class="divider">
-      <button class="btn btn-primary" onclick="show('login')">Login / Register</button>
+      <div id="home-auth-btns"></div>
     </div>
     <div class="bottom-nav">
       <button class="bnav-btn" onclick="show('home')"><span class="bnav-icon">🏠</span><span class="bnav-lbl" style="color:var(--primary)">Home</span></button>
       <button class="bnav-btn" onclick="show('map')"><span class="bnav-icon">🗺️</span><span class="bnav-lbl" style="color:var(--muted)">Map</span></button>
-      <button class="bnav-btn" onclick="show('report')"><span class="bnav-icon report-icon">🚨</span><span class="bnav-lbl" style="color:var(--muted)">Report</span></button>
-      <button class="bnav-btn" onclick="show('dashboard')"><span class="bnav-icon">📋</span><span class="bnav-lbl" style="color:var(--muted)">Mine</span></button>
+      <button class="bnav-btn" onclick="requireAuth('report')"><span class="bnav-icon report-icon">🚨</span><span class="bnav-lbl" style="color:var(--muted)">Report</span></button>
+      <button class="bnav-btn" onclick="requireAuth('dashboard')"><span class="bnav-icon">📋</span><span class="bnav-lbl" style="color:var(--muted)">Mine</span></button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 2 — LOGIN
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-login">
     <div class="topbar blue">
       <button class="back-btn" onclick="show('home')">←</button>
@@ -444,12 +444,14 @@
         <div style="font-size:12px;color:var(--muted)">Sign in to report incidents</div>
       </div>
       <div class="card">
-        <div class="field-label">Phone or email</div>
-        <input class="field" type="text" placeholder="e.g. 0788 123 456">
+        <div class="field-label">Email address</div>
+        <input class="field" id="login-email" type="email" placeholder="you@example.com">
+        <div class="field-err" id="login-err-email"></div>
         <div class="field-label">Password</div>
-        <input class="field" type="password" placeholder="••••••••">
-        <div style="text-align:right;margin-bottom:14px"><span style="font-size:12px;color:var(--primary);cursor:pointer">Forgot password?</span></div>
-        <button class="btn btn-primary" onclick="show('dashboard')">Sign in</button>
+        <input class="field" id="login-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="field-err" id="login-err-pass"></div>
+        <div id="login-err-general" style="font-size:11px;color:var(--danger);margin-bottom:10px;display:none;text-align:center;"></div>
+        <button class="btn btn-primary" onclick="doLogin()">Sign in</button>
         <div style="text-align:center;font-size:12px;color:var(--muted);margin:4px 0">or</div>
         <button class="btn btn-ghost" onclick="show('register')">Create account</button>
       </div>
@@ -460,9 +462,9 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 3 — REGISTER
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-register">
     <div class="topbar blue">
       <button class="back-btn" onclick="show('login')">←</button>
@@ -470,15 +472,26 @@
     </div>
     <div class="body">
       <div class="card">
-        <div class="field-label">Full name</div>
-        <input class="field" type="text" placeholder="e.g. Jean-Paul Habimana">
-        <div class="field-label">Phone number</div>
-        <input class="field" type="text" placeholder="+250 7XX XXX XXX">
-        <div class="field-label">Email (optional)</div>
-        <input class="field" type="email" placeholder="you@example.com">
-        <div class="field-label">Password</div>
-        <input class="field" type="password" placeholder="Create a password">
-        <button class="btn btn-primary" onclick="show('dashboard')">Register</button>
+        <div class="field-label">Full name *</div>
+        <input class="field" id="reg-name" type="text" placeholder="e.g. Amahle Nkunda">
+        <div class="field-err" id="reg-err-name"></div>
+        <div class="field-label">Phone number *</div>
+        <input class="field" id="reg-phone" type="tel" placeholder="+250 7XX XXX XXX">
+        <div class="field-err" id="reg-err-phone"></div>
+        <div class="field-label">Email address *</div>
+        <input class="field" id="reg-email" type="email" placeholder="you@example.com">
+        <div class="field-err" id="reg-err-email"></div>
+        <div class="field-label">Role *</div>
+        <select class="field" id="reg-role">
+          <option value="citizen">Citizen</option>
+          <option value="police">Police / Traffic Admin</option>
+          <option value="emergency">Emergency Services</option>
+        </select>
+        <div class="field-label">Password *</div>
+        <input class="field" id="reg-pass" type="password" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter')doRegister()">
+        <div class="field-err" id="reg-err-pass"></div>
+        <div id="reg-err-general" style="font-size:11px;color:var(--danger);margin-bottom:10px;display:none;text-align:center;"></div>
+        <button class="btn btn-primary" onclick="doRegister()">Create account</button>
         <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:6px">
           Already registered? <span style="color:var(--primary);cursor:pointer" onclick="show('login')">Sign in</span>
         </div>
@@ -486,48 +499,39 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 4 — CITIZEN DASHBOARD
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-dashboard">
     <div class="topbar blue">
       <div style="flex:1">
         <div class="topbar-title">My dashboard</div>
-        <div class="topbar-sub">Jean-Paul H.</div>
+        <div class="topbar-sub" id="dash-user-sub">—</div>
       </div>
-      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px">JP</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="dash-avatar" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px">?</div>
+        <button style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)" onclick="doLogout()">Out</button>
+      </div>
     </div>
     <div class="body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div class="card" style="text-align:center;padding:14px 10px">
           <div style="font-size:22px;margin-bottom:2px">📋</div>
-          <div style="font-size:22px;font-weight:800;color:var(--primary)">3</div>
+          <div style="font-size:22px;font-weight:800;color:var(--primary)" id="dash-my-count">0</div>
           <div style="font-size:11px;color:var(--muted)">My reports</div>
         </div>
         <div class="card" style="text-align:center;padding:14px 10px">
           <div style="font-size:22px;margin-bottom:2px">📍</div>
-          <div style="font-size:22px;font-weight:800;color:var(--danger)">5</div>
-          <div style="font-size:11px;color:var(--muted)">Active nearby</div>
+          <div style="font-size:22px;font-weight:800;color:var(--danger)" id="dash-active-count">0</div>
+          <div style="font-size:11px;color:var(--muted)">Active incidents</div>
         </div>
       </div>
       <button class="btn btn-danger" onclick="show('report')">🚨 Report new incident</button>
       <button class="btn btn-ghost" onclick="show('map')">View traffic map</button>
       <hr class="divider">
       <div class="card-label">My submitted reports</div>
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚨</span>
-        <div style="flex:1"><div class="inc-name">Accident</div><div class="inc-sub">Kacyiru · 14:00</div></div>
-        <span class="badge badge-active">Active</span>
-      </div>
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚗</span>
-        <div style="flex:1"><div class="inc-name">Traffic jam</div><div class="inc-sub">Nyabugogo · 13:30</div></div>
-        <span class="badge badge-active">Active</span>
-      </div>
-      <div class="inc-row" onclick="show('detail')">
-        <span class="inc-icon">🚦</span>
-        <div style="flex:1"><div class="inc-name">Broken traffic light</div><div class="inc-sub">Kimironko · 11:00</div></div>
-        <span class="badge badge-resolved">Resolved</span>
+      <div id="dash-my-reports">
+        <div class="empty-state"><div class="ei">📋</div>You haven't submitted any reports yet.</div>
       </div>
     </div>
     <div class="bottom-nav">
@@ -538,9 +542,9 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 5 — REPORT INCIDENT
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-report">
     <div class="topbar blue">
       <button class="back-btn" onclick="show('dashboard')">←</button>
@@ -548,25 +552,34 @@
     </div>
     <div class="body" id="report-body">
       <div class="card">
-        <div class="card-label">Incident type</div>
-        <div class="type-grid">
-          <button class="type-btn" onclick="selectType(this)"><span class="type-icon">🚨</span>Accident</button>
-          <button class="type-btn" onclick="selectType(this)"><span class="type-icon">🚗</span>Traffic jam</button>
-          <button class="type-btn" onclick="selectType(this)"><span class="type-icon">🚧</span>Road blockage</button>
-          <button class="type-btn" onclick="selectType(this)"><span class="type-icon">🚦</span>Broken light</button>
+        <div class="card-label">Incident type *</div>
+        <div class="type-grid" id="type-grid">
+          <button class="type-btn" onclick="selectType(this,'Accident')"><span class="type-icon">🚨</span>Accident</button>
+          <button class="type-btn" onclick="selectType(this,'Traffic Jam')"><span class="type-icon">🚗</span>Traffic jam</button>
+          <button class="type-btn" onclick="selectType(this,'Road Blockage')"><span class="type-icon">🚧</span>Road blockage</button>
+          <button class="type-btn" onclick="selectType(this,'Broken Light')"><span class="type-icon">🚦</span>Broken light</button>
+          <button class="type-btn" onclick="selectType(this,'Road Damage')"><span class="type-icon">🛣️</span>Road damage</button>
+          <button class="type-btn" onclick="selectType(this,'Other')"><span class="type-icon">⚠️</span>Other</button>
         </div>
+        <div class="field-err" id="rep-err-type" style="margin-top:6px"></div>
       </div>
       <div class="card">
-        <div class="card-label">Description</div>
-        <textarea class="field" rows="3" placeholder="Describe what happened..."></textarea>
+        <div class="card-label">Description *</div>
+        <textarea class="field" id="rep-desc" rows="3" placeholder="Describe what happened..."></textarea>
+        <div class="field-err" id="rep-err-desc"></div>
       </div>
       <div class="card">
-        <div class="card-label">Location</div>
-        <div style="background:#dbeafe;border-radius:8px;height:60px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid #bfdbfe;cursor:pointer">
-          <span style="font-size:16px;margin-right:6px">📍</span>
-          <span style="font-size:12px;color:#1e40af;font-weight:600">Kigali, Rwanda — tap to change</span>
+        <div class="card-label">Location *</div>
+        <input class="field" id="rep-location" type="text" placeholder="e.g. Kacyiru, KN 3 Ave" style="margin-bottom:0">
+        <div class="field-err" id="rep-err-loc"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Priority</div>
+        <div style="display:flex;gap:6px">
+          <button class="type-btn" id="pri-high" onclick="selectPriority('High')" style="padding:6px 10px;font-size:11px">🔴 High</button>
+          <button class="type-btn selected" id="pri-med" onclick="selectPriority('Medium')" style="padding:6px 10px;font-size:11px">🟡 Medium</button>
+          <button class="type-btn" id="pri-low" onclick="selectPriority('Low')" style="padding:6px 10px;font-size:11px">🔵 Low</button>
         </div>
-        <input class="field" type="text" placeholder="Or type a location..." style="margin-bottom:0">
       </div>
       <div class="card">
         <div class="card-label">Photo (optional)</div>
@@ -574,47 +587,39 @@
       </div>
       <button class="btn btn-danger" onclick="submitReport()">Submit report</button>
     </div>
-    <!-- Success state (hidden) -->
     <div class="success-screen" id="report-success" style="display:none">
       <div class="success-icon">✅</div>
       <div style="font-weight:800;font-size:18px;color:var(--text);margin-bottom:8px">Report submitted!</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6">Your report has been sent to traffic authority and will appear on the live map shortly.</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6">Your report has been sent to the traffic authority and will appear on the live map shortly.</div>
       <button class="btn btn-primary" onclick="show('dashboard')">Back to dashboard</button>
       <button class="btn btn-ghost" onclick="show('map')">View on map</button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 6 — LIVE MAP
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-map">
     <div class="topbar blue">
       <button class="back-btn" onclick="show('home')">←</button>
       <div style="flex:1"><div class="topbar-title">Live traffic map</div><div class="topbar-sub">Kigali, Rwanda</div></div>
       <span style="background:#dc2626;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:800">● LIVE</span>
     </div>
-    <div class="filter-bar" id="filter-bar">
+    <div class="filter-bar">
       <button class="filter-btn active" onclick="filterMap(this,'All')">All</button>
       <button class="filter-btn" onclick="filterMap(this,'Accident')">Accidents</button>
-      <button class="filter-btn" onclick="filterMap(this,'Traffic jam')">Traffic jam</button>
-      <button class="filter-btn" onclick="filterMap(this,'Road blockage')">Blockage</button>
+      <button class="filter-btn" onclick="filterMap(this,'Traffic Jam')">Traffic jam</button>
+      <button class="filter-btn" onclick="filterMap(this,'Road Blockage')">Blockage</button>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;background:#d1fae5">
-      <div class="map-grid" style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:28px 28px;"></div>
-      <!-- roads -->
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:28px 28px;"></div>
       <div style="position:absolute;top:50%;left:0;right:0;height:8px;background:rgba(255,255,255,.75);transform:translateY(-50%)"></div>
       <div style="position:absolute;top:0;bottom:0;left:38%;width:8px;background:rgba(255,255,255,.75)"></div>
       <div style="position:absolute;top:30%;left:0;right:0;height:5px;background:rgba(255,255,255,.5)"></div>
       <div style="position:absolute;top:0;bottom:0;left:65%;width:5px;background:rgba(255,255,255,.5)"></div>
-      <!-- pins -->
-      <div class="map-pin" style="background:#dc2626;top:32%;left:35%" title="Accident - Kacyiru" onclick="show('detail')"></div>
-      <div class="map-label" style="top:22%;left:30%;color:#dc2626;border:1px solid #fecaca">Accident</div>
-      <div class="map-pin" style="background:#d97706;top:55%;left:20%" title="Traffic jam - Nyabugogo" onclick="show('detail')"></div>
-      <div class="map-label" style="top:66%;left:12%;color:#d97706;border:1px solid #fde68a">Traffic jam</div>
-      <div class="map-pin" style="background:#f59e0b;top:42%;left:60%" title="Road blockage - Remera" onclick="show('detail')"></div>
-      <div class="map-label" style="top:32%;left:56%;color:#b45309;border:1px solid #fde68a">Blockage</div>
-      <div class="map-pin" style="background:#dc2626;top:22%;left:58%" title="Accident - Gisozi" onclick="show('detail')"></div>
-      <div class="map-pin" style="background:#6b7280;top:68%;left:48%" title="Broken light - Kimironko" onclick="show('detail')"></div>
+      <!-- dynamic pins rendered by JS -->
+      <div id="map-pins"></div>
+      <div style="position:absolute;top:8px;right:10px;font-size:10px;color:#064e3b;background:rgba(255,255,255,.85);padding:3px 8px;border-radius:8px;font-weight:700" id="map-count">0 incidents</div>
     </div>
     <div class="map-legend">
       <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Legend</div>
@@ -622,228 +627,508 @@
         <div style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#dc2626"></div><span style="font-size:10px;color:var(--muted)">Accident</span></div>
         <div style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#d97706"></div><span style="font-size:10px;color:var(--muted)">Traffic jam</span></div>
         <div style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#f59e0b"></div><span style="font-size:10px;color:var(--muted)">Blockage</span></div>
-        <div style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#6b7280"></div><span style="font-size:10px;color:var(--muted)">Signal</span></div>
+        <div style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#6b7280"></div><span style="font-size:10px;color:var(--muted)">Signal/Other</span></div>
       </div>
     </div>
     <div class="bottom-nav">
       <button class="bnav-btn" onclick="show('home')"><span class="bnav-icon">🏠</span><span class="bnav-lbl" style="color:var(--muted)">Home</span></button>
       <button class="bnav-btn" onclick="show('map')"><span class="bnav-icon">🗺️</span><span class="bnav-lbl" style="color:var(--primary)">Map</span></button>
-      <button class="bnav-btn" onclick="show('report')"><span class="bnav-icon report-icon">🚨</span><span class="bnav-lbl" style="color:var(--muted)">Report</span></button>
-      <button class="bnav-btn" onclick="show('dashboard')"><span class="bnav-icon">📋</span><span class="bnav-lbl" style="color:var(--muted)">Mine</span></button>
+      <button class="bnav-btn" onclick="requireAuth('report')"><span class="bnav-icon report-icon">🚨</span><span class="bnav-lbl" style="color:var(--muted)">Report</span></button>
+      <button class="bnav-btn" onclick="requireAuth('dashboard')"><span class="bnav-icon">📋</span><span class="bnav-lbl" style="color:var(--muted)">Mine</span></button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 7 — INCIDENT DETAIL
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-detail">
     <div class="topbar blue">
-      <button class="back-btn" onclick="show('map')">←</button>
+      <button class="back-btn" id="detail-back-btn" onclick="show('map')">←</button>
       <div><div class="topbar-title">Incident details</div><div class="topbar-sub">Full report</div></div>
     </div>
-    <div class="detail-photo">📸</div>
+    <div class="detail-photo" id="detail-photo-icon">📸</div>
     <div class="body">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div>
-          <div style="font-weight:800;font-size:17px;color:var(--text)">Accident</div>
-          <div style="font-size:12px;color:var(--muted)">Kacyiru, KN 3 Ave</div>
+          <div style="font-weight:800;font-size:17px;color:var(--text)" id="detail-type">—</div>
+          <div style="font-size:12px;color:var(--muted)" id="detail-location">—</div>
         </div>
-        <span class="badge badge-active">Active</span>
+        <span class="badge" id="detail-badge">—</span>
       </div>
-      <div class="detail-field"><div class="detail-field-label">Description</div><div class="detail-field-val">Two-vehicle collision near roundabout</div></div>
-      <div class="detail-field"><div class="detail-field-label">Reporter</div><div class="detail-field-val">Jean-Paul H.</div></div>
-      <div class="detail-field"><div class="detail-field-label">Time reported</div><div class="detail-field-val">14:00</div></div>
-      <div class="detail-field"><div class="detail-field-label">Location</div><div class="detail-field-val">Kacyiru, KN 3 Ave, Kigali</div></div>
-      <div style="background:#dbeafe;border-radius:10px;height:70px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid #bfdbfe;cursor:pointer" onclick="show('map')">
-        <span style="font-size:18px;margin-right:6px">📍</span>
-        <span style="font-size:12px;color:#1e40af;font-weight:600">View on live map →</span>
+      <div class="detail-field"><div class="detail-field-label">Description</div><div class="detail-field-val" id="detail-desc">—</div></div>
+      <div class="detail-field"><div class="detail-field-label">Reporter</div><div class="detail-field-val" id="detail-reporter">—</div></div>
+      <div class="detail-field"><div class="detail-field-label">Priority</div><div class="detail-field-val" id="detail-priority">—</div></div>
+      <div class="detail-field"><div class="detail-field-label">Time reported</div><div class="detail-field-val" id="detail-time">—</div></div>
+      <!-- Admin update panel (police/admin only) -->
+      <div id="detail-admin-panel" style="display:none">
+        <hr class="divider">
+        <div class="card-label">Update Status</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px" id="detail-status-btns"></div>
       </div>
-      <button class="btn btn-ghost" onclick="show('map')">Back to map</button>
+      <button class="btn btn-ghost" onclick="show('map')" style="margin-top:8px">← Back to map</button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 8 — POLICE DASHBOARD
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-police">
     <div class="topbar dark">
       <div style="flex:1">
         <div class="topbar-title">Police dashboard</div>
-        <div class="topbar-sub">Traffic authority · Kigali</div>
+        <div class="topbar-sub" id="police-user-sub">Traffic authority · Kigali</div>
       </div>
-      <span style="background:#dc2626;color:#fff;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:800">3 ACTIVE</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="background:#dc2626;color:#fff;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:800" id="police-active-badge">0 ACTIVE</span>
+        <button style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)" onclick="doLogout()">Out</button>
+      </div>
     </div>
     <div class="body">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--primary)">5</div><div style="font-size:10px;color:var(--muted)">Total</div></div>
-        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--danger)">3</div><div style="font-size:10px;color:var(--muted)">Active</div></div>
-        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--success)">2</div><div style="font-size:10px;color:var(--muted)">Resolved</div></div>
+        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--primary)" id="pol-total">0</div><div style="font-size:10px;color:var(--muted)">Total</div></div>
+        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--danger)" id="pol-active">0</div><div style="font-size:10px;color:var(--muted)">Active</div></div>
+        <div class="card" style="text-align:center;padding:10px 6px"><div style="font-size:18px;font-weight:800;color:var(--success)" id="pol-resolved">0</div><div style="font-size:10px;color:var(--muted)">Resolved</div></div>
       </div>
-
-      <div class="police-row high">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:18px">🚨</span>
-            <div><div style="font-weight:700;font-size:13px">Accident</div><div style="font-size:11px;color:var(--muted)">Kacyiru, KN 3 Ave · 14:00</div></div>
-          </div>
-          <span class="badge badge-active">Active</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Two-vehicle collision near roundabout</div>
-        <div class="police-actions">
-          <button class="btn-sm" style="flex:1;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0" onclick="resolveIncident(this)">✓ Resolve</button>
-          <button class="btn-sm" style="flex:1;background:#eff6ff;color:var(--primary);border:1px solid #bfdbfe">Assign</button>
-          <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)" onclick="show('detail')">Details</button>
-        </div>
-      </div>
-
-      <div class="police-row high">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:18px">🚨</span>
-            <div><div style="font-weight:700;font-size:13px">Accident</div><div style="font-size:11px;color:var(--muted)">Gisozi, KG 200 St · 10:15</div></div>
-          </div>
-          <span class="badge badge-active">Active</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Motorcycle accident, injuries reported</div>
-        <div class="police-actions">
-          <button class="btn-sm" style="flex:1;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0" onclick="resolveIncident(this)">✓ Resolve</button>
-          <button class="btn-sm" style="flex:1;background:#eff6ff;color:var(--primary);border:1px solid #bfdbfe">Assign</button>
-          <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)" onclick="show('detail')">Details</button>
-        </div>
-      </div>
-
-      <div class="police-row">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:18px">🚗</span>
-            <div><div style="font-weight:700;font-size:13px">Traffic jam</div><div style="font-size:11px;color:var(--muted)">Nyabugogo, RN1 · 13:30</div></div>
-          </div>
-          <span class="badge badge-active">Active</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Heavy congestion at bus terminal</div>
-        <div class="police-actions">
-          <button class="btn-sm" style="flex:1;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0" onclick="resolveIncident(this)">✓ Resolve</button>
-          <button class="btn-sm" style="flex:1;background:#eff6ff;color:var(--primary);border:1px solid #bfdbfe">Assign</button>
-          <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)" onclick="show('detail')">Details</button>
-        </div>
-      </div>
-
-      <div class="police-row">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:18px">🚦</span>
-            <div><div style="font-weight:700;font-size:13px">Broken traffic light</div><div style="font-size:11px;color:var(--muted)">Kimironko · 11:00</div></div>
-          </div>
-          <span class="badge badge-resolved">Resolved</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted)">Signal at main junction was out</div>
+      <div id="police-list">
+        <div class="empty-state"><div class="ei">📊</div>No incidents reported yet.</div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════
        SCREEN 9 — EMERGENCY ALERTS
-  ════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="screen" id="screen-emergency">
     <div class="topbar red">
       <div style="flex:1">
         <div class="topbar-title">Emergency alerts</div>
-        <div class="topbar-sub">High priority only</div>
+        <div class="topbar-sub">High priority · Accidents only</div>
       </div>
-      <span style="background:#dc2626;color:#fff;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:800">2 ALERTS</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="background:#dc2626;color:#fff;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:800" id="emg-badge">0 ALERTS</span>
+        <button style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)" onclick="doLogout()">Out</button>
+      </div>
     </div>
     <div class="body">
-      <div class="emergency-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div style="font-weight:800;font-size:15px;color:#dc2626">🚨 Accident</div>
-          <span class="badge badge-high">HIGH</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:2px">📍 Kacyiru, KN 3 Ave</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">🕐 Reported at 14:00 · Two-vehicle collision near roundabout</div>
-        <div style="display:flex;gap:6px">
-          <button class="btn-sm" style="flex:1;background:#dc2626;color:#fff" onclick="respondAlert(this)">Respond now</button>
-          <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)" onclick="show('detail')">View details</button>
-        </div>
-      </div>
-
-      <div class="emergency-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div style="font-weight:800;font-size:15px;color:#dc2626">🚨 Accident</div>
-          <span class="badge badge-high">HIGH</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:2px">📍 Gisozi, KG 200 St</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">🕐 Reported at 10:15 · Motorcycle accident, injuries reported</div>
-        <div style="display:flex;gap:6px">
-          <button class="btn-sm" style="flex:1;background:#dc2626;color:#fff" onclick="respondAlert(this)">Respond now</button>
-          <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)" onclick="show('detail')">View details</button>
-        </div>
+      <div id="emergency-list">
+        <div class="empty-state"><div class="ei">✅</div>No active emergency alerts.</div>
       </div>
     </div>
   </div>
 
 </div><!-- end .phone -->
 
-<div class="hint">Click any button above to switch screens</div>
+<div class="hint" id="hint-text">Sign in or create an account to get started.</div>
+<div id="toast"></div>
 
 <script>
-  function show(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => {
-      if (b.textContent.toLowerCase().includes(id) || b.getAttribute('onclick').includes("'" + id + "'")) {
-        b.classList.add('active');
-      }
-    });
-    if (id === 'report') {
-      document.getElementById('report-body').style.display = 'block';
-      document.getElementById('report-success').style.display = 'none';
-    }
-  }
+// ══════════════════════════════════════
+//  IN-MEMORY MULTI-USER STORE
+// ══════════════════════════════════════
+const DB = {
+  users: [],
+  incidents: [],
+  _uid: 1,
+  _iid: 1
+};
 
-  function selectType(btn) {
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-  }
+let currentUser   = null;
+let selectedType  = '';
+let selectedPri   = 'Medium';
+let currentDetail = null; // incident being viewed in detail screen
+let detailFrom    = 'map';
 
-  function togglePhoto() {
-    const btn = document.getElementById('photo-btn');
-    if (btn.classList.contains('attached')) {
-      btn.classList.remove('attached');
-      btn.textContent = '+ Upload photo';
-    } else {
-      btn.classList.add('attached');
-      btn.textContent = '📷 Photo attached ✓';
-    }
-  }
+// Pin positions pool for map (randomised per report)
+const PIN_POSITIONS = [
+  {top:'32%',left:'35%'},{top:'55%',left:'20%'},{top:'42%',left:'60%'},
+  {top:'22%',left:'58%'},{top:'68%',left:'48%'},{top:'48%',left:'72%'},
+  {top:'60%',left:'36%'},{top:'18%',left:'30%'},{top:'72%',left:'22%'},
+  {top:'38%',left:'52%'}
+];
+const TYPE_COLORS = {
+  'Accident':'#dc2626','Traffic Jam':'#d97706','Road Blockage':'#f59e0b',
+  'Broken Light':'#6b7280','Road Damage':'#7c3aed','Other':'#0891b2'
+};
+const TYPE_ICONS  = {
+  'Accident':'🚨','Traffic Jam':'🚗','Road Blockage':'🚧',
+  'Broken Light':'🚦','Road Damage':'🛣️','Other':'⚠️'
+};
 
-  function submitReport() {
-    document.getElementById('report-body').style.display = 'none';
-    document.getElementById('report-success').style.display = 'flex';
-  }
+// ══════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════
+function doLogin() {
+  clearErrors('login');
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  let ok = true;
+  if (!email) { showErr('login-err-email','Email is required'); ok=false; }
+  if (!pass)  { showErr('login-err-pass','Password is required'); ok=false; }
+  if (!ok) return;
+  const user = DB.users.find(u => u.email===email && u.password===pass);
+  if (!user) { showErr('login-err-general','Incorrect email or password. Please try again.'); return; }
+  startSession(user);
+}
 
-  function resolveIncident(btn) {
-    const row = btn.closest('.police-row');
-    const badge = row.querySelector('.badge');
-    badge.className = 'badge badge-resolved';
-    badge.textContent = 'Resolved';
-    row.classList.remove('high');
-    btn.closest('.police-actions').remove();
-  }
+function doRegister() {
+  clearErrors('reg');
+  const name  = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const role  = document.getElementById('reg-role').value;
+  const pass  = document.getElementById('reg-pass').value;
+  let ok = true;
+  if (!name)          { showErr('reg-err-name','Full name is required'); ok=false; }
+  if (!phone)         { showErr('reg-err-phone','Phone number is required'); ok=false; }
+  if (!email)         { showErr('reg-err-email','Email is required'); ok=false; }
+  if (pass.length<6)  { showErr('reg-err-pass','Password must be at least 6 characters'); ok=false; }
+  if (!ok) return;
+  if (DB.users.find(u=>u.email===email)) { showErr('reg-err-general','An account with this email already exists.'); return; }
 
-  function respondAlert(btn) {
-    btn.style.background = '#f0fdf4';
-    btn.style.color = '#057a55';
-    btn.style.border = '1px solid #bbf7d0';
-    btn.textContent = '✓ Responding';
-  }
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const user = { id:DB._uid++, name, initials, phone, email, role, password:pass, joinedAt:new Date().toLocaleString() };
+  DB.users.push(user);
+  startSession(user);
+  showToast('Account created! Welcome, '+name.split(' ')[0]+'!');
+}
 
-  function filterMap(btn, type) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function startSession(user) {
+  currentUser = user;
+  updateNavForRole();
+  if (user.role==='police')    { renderPolice(); show('police'); }
+  else if (user.role==='emergency') { renderEmergency(); show('emergency'); }
+  else { renderDashboard(); show('dashboard'); }
+}
+
+function doLogout() {
+  currentUser = null;
+  updateNavForRole();
+  renderHome();
+  show('home');
+  showToast('Logged out successfully.');
+}
+
+function requireAuth(dest) {
+  if (currentUser) { show(dest); }
+  else { show('login'); showToast('Please sign in first.'); }
+}
+
+// ══════════════════════════════════════
+//  NAV / ROLE CONTROL
+// ══════════════════════════════════════
+function updateNavForRole() {
+  const loggedIn = !!currentUser;
+  const role = currentUser ? currentUser.role : null;
+
+  // login / register only when logged out
+  el('nav-login').style.display    = loggedIn ? 'none' : '';
+  el('nav-register').style.display = loggedIn ? 'none' : '';
+
+  // citizen screens
+  el('nav-dashboard').style.display = (loggedIn && role==='citizen') ? '' : 'none';
+  el('nav-report').style.display    = (loggedIn && role==='citizen') ? '' : 'none';
+
+  // police screens
+  el('nav-police').style.display    = (loggedIn && role==='police') ? '' : 'none';
+
+  // emergency screens
+  el('nav-emergency').style.display = (loggedIn && role==='emergency') ? '' : 'none';
+
+  // detail always visible
+  el('nav-detail').style.display    = 'none'; // accessed via map/list only
+
+  // hint text
+  el('hint-text').textContent = loggedIn
+    ? 'Logged in as: '+currentUser.name+' ('+currentUser.role+')'
+    : 'Sign in or create an account to get started. Use nav above to preview screens.';
+}
+
+// ══════════════════════════════════════
+//  SCREEN RENDERER HELPERS
+// ══════════════════════════════════════
+function renderHome() {
+  const incidents = DB.incidents;
+  const acc = incidents.filter(i=>i.type==='Accident').length;
+  const act = incidents.filter(i=>i.status==='Pending'||i.status==='In Progress').length;
+  const res = incidents.filter(i=>i.status==='Resolved').length;
+  el('home-stat-acc').textContent = acc;
+  el('home-stat-act').textContent = act;
+  el('home-stat-res').textContent = res;
+
+  // recent list (last 3)
+  const recent = [...incidents].reverse().slice(0,3);
+  el('home-recent-list').innerHTML = recent.length
+    ? recent.map(i=>`
+        <div class="inc-row" onclick="openDetail(${i.id},'home')">
+          <span class="inc-icon">${TYPE_ICONS[i.type]||'⚠️'}</span>
+          <div style="flex:1">
+            <div class="inc-name">${i.type}</div>
+            <div class="inc-sub">${i.location} · ${fmtTime(i.ts)}</div>
+          </div>
+          ${statusBadge(i.status)}
+        </div>`).join('')
+    : '<div class="empty-state"><div class="ei">🗺️</div>No incidents reported yet.</div>';
+
+  // auth button
+  el('home-auth-btns').innerHTML = currentUser
+    ? `<button class="btn btn-primary" onclick="show('${currentUser.role==='police'?'police':currentUser.role==='emergency'?'emergency':'dashboard'}')">Go to my dashboard →</button>`
+    : `<button class="btn btn-primary" onclick="show('login')">Login / Register</button>`;
+}
+
+function renderDashboard() {
+  if (!currentUser) return;
+  el('dash-user-sub').textContent = currentUser.name;
+  el('dash-avatar').textContent   = currentUser.initials;
+  const mine   = DB.incidents.filter(i=>i.uid===currentUser.id);
+  const active = DB.incidents.filter(i=>i.status!=='Resolved');
+  el('dash-my-count').textContent    = mine.length;
+  el('dash-active-count').textContent= active.length;
+  el('dash-my-reports').innerHTML = mine.length
+    ? [...mine].reverse().map(i=>`
+        <div class="inc-row" onclick="openDetail(${i.id},'dashboard')">
+          <span class="inc-icon">${TYPE_ICONS[i.type]||'⚠️'}</span>
+          <div style="flex:1">
+            <div class="inc-name">${i.type}</div>
+            <div class="inc-sub">${i.location} · ${fmtTime(i.ts)}</div>
+          </div>
+          ${statusBadge(i.status)}
+        </div>`).join('')
+    : '<div class="empty-state"><div class="ei">📋</div>You haven\'t submitted any reports yet.</div>';
+}
+
+function renderMap(filter) {
+  const all = filter && filter!=='All' ? DB.incidents.filter(i=>i.type===filter) : DB.incidents;
+  el('map-count').textContent = all.length + ' incident'+(all.length!==1?'s':'');
+  el('map-pins').innerHTML = all.map((inc, idx) => {
+    const pos = PIN_POSITIONS[idx % PIN_POSITIONS.length];
+    const col = TYPE_COLORS[inc.type] || '#6b7280';
+    return `<div class="map-pin" style="background:${col};top:${pos.top};left:${pos.left}"
+              title="${inc.type} - ${inc.location}" onclick="openDetail(${inc.id},'map')"></div>`;
+  }).join('');
+}
+
+function renderPolice() {
+  if (!currentUser) return;
+  el('police-user-sub').textContent = currentUser.name+' · Traffic Authority';
+  const all  = DB.incidents;
+  const act  = all.filter(i=>i.status!=='Resolved');
+  el('pol-total').textContent    = all.length;
+  el('pol-active').textContent   = act.length;
+  el('pol-resolved').textContent = all.filter(i=>i.status==='Resolved').length;
+  el('police-active-badge').textContent = act.length+' ACTIVE';
+  el('police-list').innerHTML = all.length ? [...all].reverse().map(i=>`
+    <div class="police-row${i.priority==='High'?' high':''}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:18px">${TYPE_ICONS[i.type]||'⚠️'}</span>
+          <div>
+            <div style="font-weight:700;font-size:13px">${i.type}</div>
+            <div style="font-size:11px;color:var(--muted)">${i.location} · ${fmtTime(i.ts)}</div>
+          </div>
+        </div>
+        ${statusBadge(i.status)}
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${i.desc.slice(0,60)}${i.desc.length>60?'…':''}</div>
+      ${i.status!=='Resolved' ? `<div class="police-actions">
+        <button class="btn-sm" style="flex:1;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0"
+          onclick="updateStatus(${i.id},'Resolved',this)">✓ Resolve</button>
+        <button class="btn-sm" style="flex:1;background:#eff6ff;color:var(--primary);border:1px solid #bfdbfe"
+          onclick="updateStatus(${i.id},'In Progress',this)">▶ In Progress</button>
+        <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)"
+          onclick="openDetail(${i.id},'police')">Details</button>
+      </div>` : ''}
+    </div>`).join('')
+    : '<div class="empty-state"><div class="ei">📊</div>No incidents reported yet.</div>';
+}
+
+function renderEmergency() {
+  if (!currentUser) return;
+  const alerts = DB.incidents.filter(i=>i.priority==='High'&&i.status!=='Resolved');
+  el('emg-badge').textContent = alerts.length+' ALERT'+(alerts.length!==1?'S':'');
+  el('emergency-list').innerHTML = alerts.length
+    ? [...alerts].reverse().map(i=>`
+        <div class="emergency-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+            <div style="font-weight:800;font-size:15px;color:#dc2626">${TYPE_ICONS[i.type]} ${i.type}</div>
+            <span class="badge badge-high">HIGH</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:2px">📍 ${i.location}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">🕐 ${fmtTime(i.ts)} · ${i.desc.slice(0,60)}${i.desc.length>60?'…':''}</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" style="flex:1;background:#dc2626;color:#fff"
+              onclick="updateStatus(${i.id},'In Progress',this);renderEmergency()">Respond now</button>
+            <button class="btn-sm" style="flex:1;background:#f8fafc;color:var(--muted);border:1px solid var(--border)"
+              onclick="openDetail(${i.id},'emergency')">View details</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty-state"><div class="ei">✅</div>No active emergency alerts.</div>';
+}
+
+function openDetail(id, from) {
+  const inc = DB.incidents.find(i=>i.id===id);
+  if (!inc) return;
+  currentDetail = inc;
+  detailFrom = from || 'map';
+  el('detail-type').textContent     = inc.type;
+  el('detail-location').textContent = inc.location;
+  el('detail-desc').textContent     = inc.desc;
+  el('detail-reporter').textContent = inc.reporterName;
+  el('detail-priority').textContent = inc.priority;
+  el('detail-time').textContent     = fmtTime(inc.ts)+' · '+new Date(inc.ts).toLocaleDateString();
+  el('detail-photo-icon').textContent = TYPE_ICONS[inc.type]||'📸';
+  el('detail-badge').className = 'badge '+(inc.status==='Resolved'?'badge-resolved':inc.status==='In Progress'?'badge-progress':'badge-active');
+  el('detail-badge').textContent = inc.status;
+
+  // Admin panel for police
+  const adminPanel = el('detail-admin-panel');
+  if (currentUser && currentUser.role==='police') {
+    adminPanel.style.display='block';
+    el('detail-status-btns').innerHTML = ['Pending','In Progress','Resolved'].map(s=>`
+      <button class="btn-sm" style="flex:1;background:${inc.status===s?'var(--primary)':'#f8fafc'};color:${inc.status===s?'#fff':'var(--muted)'};border:1px solid ${inc.status===s?'var(--primary)':'var(--border)'}"
+        onclick="updateStatus(${inc.id},'${s}',null);openDetail(${inc.id},'${detailFrom}')">${s}</button>`).join('');
+  } else { adminPanel.style.display='none'; }
+
+  el('detail-back-btn').onclick = ()=>show(detailFrom);
+  show('detail');
+}
+
+function updateStatus(id, status, btn) {
+  const inc = DB.incidents.find(i=>i.id===id);
+  if (!inc) return;
+  inc.status = status;
+  renderPolice();
+  renderEmergency();
+  renderHome();
+  if (currentUser && currentUser.role==='citizen') renderDashboard();
+  showToast('Status updated → '+status);
+}
+
+// ══════════════════════════════════════
+//  REPORT SUBMISSION
+// ══════════════════════════════════════
+function submitReport() {
+  clearErrors('rep');
+  const desc = el('rep-desc').value.trim();
+  const loc  = el('rep-location').value.trim();
+  let ok = true;
+  if (!selectedType) { showErr('rep-err-type','Please select an incident type'); ok=false; }
+  if (!desc)         { showErr('rep-err-desc','Please describe the incident'); ok=false; }
+  if (!loc)          { showErr('rep-err-loc','Please enter a location'); ok=false; }
+  if (!ok) return;
+  if (!currentUser)  { show('login'); return; }
+
+  const inc = {
+    id: DB._iid++,
+    type: selectedType,
+    desc, location: loc,
+    priority: selectedPri,
+    status: 'Pending',
+    uid: currentUser.id,
+    reporterName: currentUser.name,
+    ts: Date.now()
+  };
+  DB.incidents.push(inc);
+
+  // reset form
+  selectedType = ''; selectedPri = 'Medium';
+  el('rep-desc').value=''; el('rep-location').value='';
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('[id^="pri-"]').forEach(b=>b.classList.remove('selected'));
+  el('pri-med').classList.add('selected');
+  const pb = el('photo-btn'); pb.classList.remove('attached'); pb.textContent='+ Upload photo';
+
+  el('report-body').style.display='none';
+  el('report-success').style.display='flex';
+  renderHome(); renderDashboard(); renderMap();
+}
+
+// ══════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  el('screen-'+id).classList.add('active');
+  // highlight matching nav btn
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    const oc = b.getAttribute('onclick')||'';
+    if (oc.includes("'"+id+"'")) b.classList.add('active');
+  });
+  // re-render dynamic screens
+  if (id==='home')      renderHome();
+  if (id==='dashboard') renderDashboard();
+  if (id==='map')       renderMap(currentMapFilter);
+  if (id==='police')    renderPolice();
+  if (id==='emergency') renderEmergency();
+  if (id==='report') {
+    el('report-body').style.display='block';
+    el('report-success').style.display='none';
   }
+}
+
+let currentMapFilter = 'All';
+function filterMap(btn, filter) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMapFilter = filter;
+  renderMap(filter);
+}
+
+function selectType(btn, type) {
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedType = type;
+}
+
+function selectPriority(p) {
+  selectedPri = p;
+  ['high','med','low'].forEach(k=>{
+    el('pri-'+k).classList.remove('selected');
+  });
+  const map = {High:'high',Medium:'med',Low:'low'};
+  el('pri-'+map[p]).classList.add('selected');
+}
+
+function togglePhoto() {
+  const btn = el('photo-btn');
+  btn.classList.toggle('attached');
+  btn.textContent = btn.classList.contains('attached') ? '📷 Photo attached ✓' : '+ Upload photo';
+}
+
+function statusBadge(status) {
+  if (status==='Resolved')   return '<span class="badge badge-resolved">Resolved</span>';
+  if (status==='In Progress')return '<span class="badge badge-progress">In Progress</span>';
+  return '<span class="badge badge-active">Pending</span>';
+}
+
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+
+function el(id) { return document.getElementById(id); }
+
+function showErr(id, msg) {
+  const e = el(id); if (!e) return;
+  e.textContent = msg; e.style.display = 'block';
+}
+
+function clearErrors(prefix) {
+  document.querySelectorAll('[id^="'+prefix+'-err"]').forEach(e=>{
+    e.textContent=''; e.style.display='none';
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = el('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── INIT ──
+updateNavForRole();
+renderHome();
 </script>
 </body>
 </html>
-
-
