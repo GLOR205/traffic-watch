@@ -1,41 +1,29 @@
-const express = require("express");
-const cors = require("cors");
-
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// middleware
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use(cors({
+  origin: "*" // Or restrict to GitHub Pages if needed
+}));
 
-// temporary storage for reports
-let reports = [];
-
-// GET all reports
-app.get("/reports", (req, res) => {
-  res.json(reports);
+// ===== Serve Frontend =====
+app.use(express.static(path.join(__dirname, 'Frontend')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
 });
 
-// POST a new report
-app.post("/reports", (req, res) => {
-
-  const report = {
-    id: Date.now(),
-    type: req.body.type,
-    description: req.body.description,
-    location: req.body.location,
-    createdAt: new Date()
-  };
-
-  reports.push(report);
-
-  res.json({
-    message: "Report submitted successfully",
-    report: report
-  });
-
+// ===== Example API Route =====
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
-// start server
-app.listen(3000, () => {
-  console.log("TrafficWatch backend running on port 3000");
+// ===== TODO: Add all your API routes here =====
+// e.g., /api/auth/register, /api/auth/login, /api/incidents, etc.
+
+app.listen(PORT, () => {
+  console.log(`🚦 TrafficWatch running on port ${PORT}`);
 });
