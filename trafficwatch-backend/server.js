@@ -143,8 +143,8 @@ app.get('/api/stats', (req, res) => {
 // ===== Serve Frontend =====
 app.use(express.static(path.join(__dirname, 'Frontend')));
 
-// SPA fallback (must be last route!)
-app.use((req, res) => {
+// SPA fallback (must be last!)
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
 });
 
