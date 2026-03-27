@@ -8,7 +8,7 @@ const Database = require('better-sqlite3');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
+// ===== Middleware =====
 app.use(cors());
 app.use(express.json());
 
@@ -62,11 +62,8 @@ app.post('/api/auth/register', (req, res) => {
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const user = db.prepare(`SELECT * FROM users WHERE email = ? AND password = ?`).get(email, password);
-  if (user) {
-    res.json({ success: true, user });
-  } else {
-    res.status(401).json({ success: false, message: 'Invalid credentials' });
-  }
+  if (user) res.json({ success: true, user });
+  else res.status(401).json({ success: false, message: 'Invalid credentials' });
 });
 
 // Get all users
@@ -90,7 +87,7 @@ app.post('/api/incidents', (req, res) => {
   }
 });
 
-// Get all incidents (with optional filters)
+// Get all incidents with optional filters
 app.get('/api/incidents', (req, res) => {
   const { status, priority, reporter_id, type } = req.query;
   let query = `SELECT * FROM incidents WHERE 1=1`;
@@ -104,7 +101,7 @@ app.get('/api/incidents', (req, res) => {
   res.json(incidents);
 });
 
-// Get single incident
+// Get one incident by ID
 app.get('/api/incidents/:id', (req, res) => {
   const incident = db.prepare(`SELECT * FROM incidents WHERE id = ?`).get(req.params.id);
   if (incident) res.json(incident);
@@ -146,7 +143,7 @@ app.get('/api/stats', (req, res) => {
 // ===== Serve Frontend =====
 app.use(express.static(path.join(__dirname, 'Frontend')));
 
-// SPA fallback (must come last!)
+// SPA fallback (must be last route!)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
 });
