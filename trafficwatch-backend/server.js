@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -7,19 +8,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ── SERVE FRONTEND ──
+// This serves your index.html and any other files in the Frontend folder
+app.use(express.static(path.join(__dirname, "Frontend")));
+
 // temporary storage for reports
 let reports = [];
 
-// HOME route — fixes "Cannot GET /" on Render
+// HOME route — serves your frontend app
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "TrafficWatch RW API is running!",
-    endpoints: [
-      "GET  /reports",
-      "POST /reports"
-    ]
-  });
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
 // GET all reports
@@ -43,6 +41,15 @@ app.post("/reports", (req, res) => {
   res.json({
     message: "Report submitted successfully",
     report: report
+  });
+
+});
+
+// start server — use process.env.PORT for Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`TrafficWatch backend running on port ${PORT}`);
+});
   });
 
 });
