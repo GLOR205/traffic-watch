@@ -4,17 +4,19 @@
 
 ---
 
-## 🌐 Live Demo
-**[https://glor205.github.io/trafficwatch/](https://glor205.github.io/trafficwatch/)**
+## 🌐 Live Application
+**[https://traffic-watch.onrender.com](https://traffic-watch.onrender.com)**
+
+> Anyone can open this link in any browser on any device and use the full app.
 
 ---
 
 ## 📋 Project Overview
 
-TrafficWatch RW is the frontend prototype for the Smart Traffic Response System (STRS), developed as part of a software engineering summative project. It allows citizens to report traffic incidents, police/admins to manage and resolve them, and emergency services to respond to high-priority alerts — all through a clean, mobile-friendly web interface.
+**TrafficWatch RW** is the prototype for the Smart Traffic Response System (STRS), developed as a software engineering summative project. It solves the problem of Kigali lacking a centralized real-time digital platform for reporting and managing traffic issues.
 
 ### The Problem
-Kigali lacks a centralized real-time digital platform for reporting and managing traffic issues. Authorities face delayed responses, poor incident tracking, and limited ability to reroute traffic or dispatch emergency services quickly.
+Kigali lacks a centralized real-time digital platform for reporting and managing traffic issues. Authorities face delayed responses, poor incident tracking, and limited ability to reroute traffic or dispatch emergency services quickly — worsening congestion and reducing the effectiveness of traffic management.
 
 ### The Solution
 A centralized web platform where:
@@ -36,9 +38,9 @@ A centralized web platform where:
 
 ## ✅ Features
 
-- User registration and login (with role selection)
+- User registration and login with role selection
 - Report incidents: Accident, Traffic Jam, Road Blockage, Broken Light, Road Damage
-- Priority levels: High, Medium, Low
+- Priority levels: High 🔴, Medium 🟡, Low 🔵
 - Status tracking: Pending → In Progress → Resolved
 - Live traffic map with incident pins
 - Emergency alerts panel for high-priority incidents
@@ -50,26 +52,26 @@ A centralized web platform where:
 ## 🗂️ Project Structure
 
 ```
-trafficwatch-rw/
-├── Frontend/
-│   └── index.html          ← Main frontend application
+traffic-watch/
 ├── trafficwatch-backend/
-│   ├── server.js           ← Node.js + Express REST API
-│   ├── package.json        ← Backend dependencies
-│   └── trafficwatch.db     ← SQLite database (auto-created)
+│   ├── Frontend/
+│   │   └── index.html        ← Frontend application
+│   ├── server.js             ← Node.js + Express backend
+│   ├── package.json          ← Dependencies
+│   └── package-lock.json
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 How to Run Locally (Step by Step)
 
 ### Prerequisites
-Make sure you have these installed on your computer:
-- [Node.js](https://nodejs.org) (version 14 or higher)
-- [Git](https://git-scm.com)
-- [VS Code](https://code.visualstudio.com) (recommended)
-- VS Code extension: **Live Server** (by Ritwick Dey)
+Make sure you have these installed:
+- [Node.js](https://nodejs.org) — download and install (version 14 or higher)
+- [Git](https://git-scm.com) — download and install
+- [VS Code](https://code.visualstudio.com) — recommended code editor
 
 ---
 
@@ -78,79 +80,73 @@ Make sure you have these installed on your computer:
 Open your terminal or VS Code terminal and run:
 
 ```bash
-git clone https://github.com/GLOR205/trafficwatch-rw.git
-cd trafficwatch-rw
+git clone https://github.com/GLOR205/traffic-watch.git
+cd traffic-watch
 ```
 
 ---
 
-### Step 2 — Set up and run the backend
+### Step 2 — Go into the backend folder
 
 ```bash
-# Go into the backend folder
 cd trafficwatch-backend
+```
 
-# Install dependencies
+---
+
+### Step 3 — Install dependencies
+
+```bash
 npm install
+```
 
-# Start the backend server
+This installs `express` and `cors` — no extra tools needed.
+
+---
+
+### Step 4 — Start the server
+
+```bash
 node server.js
 ```
 
 You should see:
 ```
-✅ Database ready — trafficwatch.db
-🚦 TrafficWatch RW backend running on http://localhost:3000
+TrafficWatch running on port 3000
 ```
 
-> The SQLite database file (`trafficwatch.db`) is created automatically on first run. No extra database setup needed.
+---
+
+### Step 5 — Open the app
+
+Open your browser and go to:
+```
+http://localhost:3000
+```
+
+Your full TrafficWatch app will load — both frontend and backend running together.
 
 ---
 
-### Step 3 — Open the frontend
+## 🔌 API Endpoints
 
-1. In VS Code, go to **File → Open Folder** and open the **Frontend** folder
-2. Right-click `index.html` in the Explorer panel
-3. Click **Open with Live Server**
-
-The app will open at: `http://127.0.0.1:5500`
-
----
-
-### Step 4 — Use the app
-
-1. Click **Register** to create a new account
-2. Choose your role: Citizen, Police, or Emergency Services
-3. Log in with your email and password
-4. As a **Citizen**: submit a traffic report
-5. Log out and log in as **Police** to manage incidents
-6. Log out and log in as **Emergency Services** to see high-priority alerts
-
----
-
-## 🔌 Backend API Endpoints
-
-Base URL: `http://localhost:3000`
+Base URL (live): `https://traffic-watch.onrender.com`
+Base URL (local): `http://localhost:3000`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| POST | `/api/auth/register` | Create a new user account |
-| POST | `/api/auth/login` | Sign in |
-| GET | `/api/users` | List all users |
-| GET | `/api/incidents` | Get all incidents (supports filters) |
-| GET | `/api/incidents/:id` | Get one incident by ID |
-| POST | `/api/incidents` | Report a new incident |
-| PUT | `/api/incidents/:id` | Update incident status or notes |
-| DELETE | `/api/incidents/:id` | Delete an incident |
-| GET | `/api/stats` | Get live dashboard statistics |
+| GET | `/` | Loads the frontend app |
+| GET | `/reports` | Get all submitted reports |
+| POST | `/reports` | Submit a new report |
 
-### Filter incidents by query:
-```
-GET /api/incidents?status=Pending
-GET /api/incidents?priority=High
-GET /api/incidents?reporter_id=1
-GET /api/incidents?type=Accident
+### Example — Submit a report:
+```json
+POST /reports
+{
+  "type": "Accident",
+  "description": "Two-vehicle collision near roundabout",
+  "location": "Kacyiru, KN 3 Ave"
+}
 ```
 
 ---
@@ -161,19 +157,30 @@ GET /api/incidents?type=Accident
 |-------|-----------|
 | Frontend | HTML, CSS, JavaScript |
 | Backend | Node.js, Express.js |
-| Database | SQLite (via better-sqlite3) |
-| Hosting | GitHub Pages (frontend) |
+| Hosting | Render (frontend + backend together) |
+
+---
+
+## 🧪 How to Test the Live App
+
+1. Open **[https://traffic-watch.onrender.com](https://traffic-watch.onrender.com)**
+2. Click **Register** — create a Citizen account
+3. Log in and submit a traffic report
+4. Log out → Register a **Police** account
+5. Log in as Police — manage and resolve the report
+6. Log out → Register an **Emergency Services** account
+7. Log in as Emergency — view high-priority alerts
 
 ---
 
 ## 📄 SRS Document
 
-[View the Software Requirements Specification (SRS)]
-https://docs.google.com/document/d/1Rd1LYLd59Se90WhaTWNoPQo4XHbTzsOm/edit?usp=sharing&ouid=117931866481247386056&rtpof=true&sd=true
+[View the Software Requirements Specification](https://docs.google.com/document/u/0/)
 
 ---
 
 ## 👩‍💻 Author
 
-**Gloria Muhorakeye**
-Software Engineering Summative Project — 2026
+**Gloria Muhorakeye**  
+Software Engineering Summative Project — 2026  
+GitHub: [@GLOR205](https://github.com/GLOR205)
